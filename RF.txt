@@ -1,0 +1,47 @@
+%Delete Frames based on threshold value
+
+readerobj = VideoReader('cut4.mp4'); 
+vidFrames = read(readerobj);
+
+numFrames=readerobj.NumberOfFrames;
+prevFrame = rgb2gray(vidFrames(:,:,:,1));
+
+for k = 1 : numFrames
+currFrame = rgb2gray(vidFrames(:,:,:,k));
+diffFrame = uint8(abs(double(currFrame) - double(prevFrame)));
+mov(k).cdata = cat(3,diffFrame,diffFrame,diffFrame);
+mov(k).colormap = [];
+filename=strcat('frame',int2str(k), '.jpg');
+if diffFrame<200;
+delete(filename);
+else
+imwrite(mov(k).cdata,filename);  
+prevFrame = currFrame;
+end
+end
+
+.........................................
+
+%Delete Frames based on threshold value
+
+readerobj = VideoReader('k.mp4'); 
+vidFrames = read(readerobj);
+
+numFrames=readerobj.NumberOfFrames;
+prevFrame = rgb2gray(vidFrames(:,:,:,1));
+
+for k = 1 : numFrames
+currFrame = rgb2gray(vidFrames(:,:,:,k));
+diffFrame = uint8(abs(double(currFrame) - double(prevFrame)));
+mov(k).cdata = cat(3,diffFrame,diffFrame,diffFrame);
+mov(k).colormap = [];
+fnm=k;
+if diffFrame<200;
+delete(fnm);
+else
+filename=strcat(int2str(k), '.jpg');
+y=colormap(hot(110));
+imwrite(currFrame,y,mov(k).cdata,filename); % Re-change it to colored one  
+prevFrame = currFrame;
+end
+end
