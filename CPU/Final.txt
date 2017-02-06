@@ -1,0 +1,144 @@
+bi=cell(1,5);
+si=cell(1,15);
+
+mail = 'matlab_2013@yahoo.com';
+psswd = 'sendemail';
+host = 'smtp.mail.yahoo.com';
+port  = '465';
+emailto = 'aishwarya.gunde09@gmail.com';
+m_subject = 'subject';
+m_text = 'test';
+setpref( 'Internet','E_mail', mail );
+setpref( 'Internet', 'SMTP_Server', host );
+setpref( 'Internet', 'SMTP_Username', mail );
+setpref( 'Internet', 'SMTP_Password', psswd );
+props = java.lang.System.getProperties;
+props.setProperty( 'mail.smtp.user', mail );
+props.setProperty( 'mail.smtp.host', host );
+props.setProperty( 'mail.smtp.port', port );
+props.setProperty( 'mail.smtp.starttls.enable', 'true' );
+props.setProperty( 'mail.smtp.debug', 'true' );
+props.setProperty( 'mail.smtp.auth', 'true' );
+props.setProperty( 'mail.smtp.socketFactory.port', port );
+props.setProperty( 'mail.smtp.socketFactory.class', 'javax.net.ssl.SSLSocketFactory' );
+props.setProperty( 'mail.smtp.socketFactory.fallback', 'true' );
+%sendmail(emailto , 'ALERT', 'Some kind of suspicious activity has been detected in the department lab!');
+
+for k=1:5
+for i=1:15
+si{i} = imread(sprintf('frame%d.jpg',i));
+bi{k} = imread(sprintf('%d.jpg',k));
+boxPoints = detectSURFFeatures(rgb2gray(bi{k}));
+scenePoints = detectSURFFeatures(rgb2gray(si{i}));
+[boxFeatures, boxPoints] = extractFeatures(rgb2gray(bi{k}), boxPoints);
+[sceneFeatures, scenePoints] = extractFeatures(rgb2gray(si{i}), scenePoints);
+boxPairs = matchFeatures(boxFeatures, sceneFeatures);
+matchedBoxPoints = boxPoints(boxPairs(:, 1), :);
+matchedScenePoints = scenePoints(boxPairs(:, 2), :);
+[tform, inlierBoxPoints, inlierScenePoints, status] = estimateGeometricTransform(matchedBoxPoints, matchedScenePoints, 'projective');
+%d=size(boxPairs,1);
+if(status==1)
+ii=si{i};
+if(k==1)
+	img=imread('1.jpg');
+	img1=rgb2gray(img);
+	img2=im2bw(img1,graythresh(img1));
+	img2=~img2;
+	B = bwboundaries(img2);
+	b=length(B);
+	jj=imcrop(ii,[155 120 65 80]);
+	im1=rgb2gray(jj);
+	im2=im2bw(im1,graythresh(im1));
+	im2=~im2;
+	C = bwboundaries(im2);
+	c=length(C);
+	if(c<b)
+		%sound(randn(3190, 1), 8192);
+		kk=imfuse(img,jj,'falsecolor');
+		imshow(kk);
+		%sendmail(emailto , 'ALERT', 'Some kind of suspicious activity has been detected in the department lab!');
+	end
+
+elseif(k==2)
+	img=imread('2.jpg');
+	img1=rgb2gray(img);
+	img2=im2bw(img1,graythresh(img1));
+	img2=~img2;
+	B = bwboundaries(img2);
+	b=length(B);
+	jj=imcrop(ii,[190 110 50 65]);
+	im1=rgb2gray(jj);
+	im2=im2bw(im1,graythresh(im1));
+	im2=~im2;
+	C = bwboundaries(im2);
+	c=length(C);
+	if(c<b)
+		%sound(randn(3190, 1), 8192);
+		kk=imfuse(img,jj,'falsecolor');
+		imshow(kk);
+		%sendmail(emailto , 'ALERT', 'Some kind of suspicious activity has been detected in the department lab!');
+	end
+
+elseif(k==3)
+	img=imread('3.jpg');
+	img1=rgb2gray(img);
+	img2=im2bw(img1,graythresh(img1));
+	img2=~img2;
+	B = bwboundaries(img2);
+	b=length(B);
+	jj=imcrop(ii,[230 80 60 50]);
+	im1=rgb2gray(jj);
+	im2=im2bw(im1,graythresh(im1));
+	im2=~im2;
+	C = bwboundaries(im2);
+	c=length(C);
+	if(c<b)
+		sound(randn(3190, 1), 8192);
+		kk=imfuse(img,jj);
+		imshow(kk);
+		sendmail(emailto , 'ALERT', 'Some kind of suspicious activity has been detected in the department lab!');
+	end
+
+elseif(k==4)
+	img=imread('4.jpg');
+	img1=rgb2gray(img);
+	img2=im2bw(img1,graythresh(img1));
+	img2=~img2;
+	B = bwboundaries(img2);
+	b=length(B);
+	jj=imcrop(ii,[260 50 50 60]);
+	im1=rgb2gray(jj);
+	im2=im2bw(im1,graythresh(im1));
+	im2=~im2;
+	C = bwboundaries(im2);
+	c=length(C);
+	if(c<b)
+		sound(randn(3190, 1), 8192);
+		kk=imfuse(img,jj,'falsecolor');
+		imshow(kk);
+		%sendmail(emailto , 'ALERT', 'Some kind of suspicious activity has been detected in the department lab!');
+	end
+
+elseif(k==5)
+	img=imread('5.jpg');
+	img1=rgb2gray(img);
+	img2=im2bw(img1,graythresh(img1));
+	img2=~img2;
+	B = bwboundaries(img2);
+	b=length(B);
+	jj=imcrop(ii,[290 40 65 50]);
+	im1=rgb2gray(jj);
+	im2=im2bw(im1,graythresh(im1));
+	im2=~im2;
+	C = bwboundaries(im2);
+	c=length(C);
+	if(c<b)
+		sound(randn(3190, 1), 8192);
+		kk=imfuse(img,jj,'falsecolor');
+		imshow(kk);
+		sendmail(emailto , 'ALERT', 'Some kind of suspicious activity has been detected in the department lab!');
+	end
+end
+end
+end
+end

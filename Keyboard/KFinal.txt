@@ -1,0 +1,41 @@
+
+bi=cell(1,7);
+si=cell(1,20);
+
+for k=1
+for i=5:10
+si{i} = imread(sprintf('frame%d.jpg',i));
+bi{k} = imread(sprintf('%d.jpg',k));
+boxPoints = detectFASTFeatures(rgb2gray(bi{k}));
+scenePoints = detectFASTFeatures(rgb2gray(si{i}));
+[boxFeatures, boxPoints] = extractFeatures(rgb2gray(bi{k}), boxPoints);
+[sceneFeatures, scenePoints] = extractFeatures(rgb2gray(si{i}), scenePoints);
+boxPairs = matchFeatures(boxFeatures, sceneFeatures);
+matchedBoxPoints = boxPoints(boxPairs(:, 1), :);
+matchedScenePoints = scenePoints(boxPairs(:, 2), :);
+[tform, inlierBoxPoints, inlierScenePoints, status] = estimateGeometricTransform(matchedBoxPoints, matchedScenePoints, 'projective');
+ii=si{i};
+if(k==1)
+	img=imread('1.jpg');
+	imshow(img);
+	img1=rgb2gray(img);
+	img2=im2bw(img1,graythresh(img1));
+	img2=~img2;
+	B = bwboundaries(img2);
+	b=length(B);
+	jj=imcrop(ii,[663 233 205 175]);
+	imshow(jj);
+	im1=rgb2gray(jj);
+	im2=im2bw(im1,graythresh(im1));
+	im2=~im2;
+	C = bwboundaries(im2);
+	c=length(C);
+	if(c<b)
+		sound(randn(4096, 1), 8192);
+		kk=imfuse(jj,img,'falsecolor');
+		imshow(kk);
+	end
+end
+end
+
+

@@ -1,0 +1,88 @@
+% histogram equilization
+
+% step 1
+
+img1 = rgb2gray(imread('img1.jpg'));
+img2 = rgb2gray(imread('img2.jpg'));
+rgb = imread('img3.jpg');
+[IND,map] = rgb2ind(rgb,32);
+img3 = ind2rgb(IND,map); % convert to truecolor
+
+% step 2
+
+images = {img1, img2, img3};
+
+img1 = images{1};
+img2 = images{2};
+img3 = images{3};
+
+%step 3
+
+img1_imadjust = imadjust(img1);
+img1_histeq = histeq(img1);
+img1_adapthisteq = adapthisteq(img1);
+
+imshow(img1);
+title('Original');
+
+figure, imshow(img1_imadjust);
+title('Imadjust');
+figure, imshow(img1_histeq);
+title('Histeq');
+
+figure, imshow(img1_adapthisteq);
+title('Adapthisteq');
+img2_imadjust = imadjust(img2);
+img2_histeq = histeq(img2);
+img2_adapthisteq = adapthisteq(img2);
+
+figure, imshow(img2);
+title('Original');
+
+figure, imshow(img2_imadjust);
+title('Imadjust');
+figure, imshow(img2_histeq);
+title('Histeq');
+
+figure, imshow(img2_adapthisteq);
+title('Adapthisteq');
+figure, imhist(img1), title('img1.jpg');
+figure, imhist(img2), title('img2.jpg');
+
+% step 4
+
+srgb2lab = makecform('srgb2lab');
+lab2srgb = makecform('lab2srgb');
+
+img3_lab = applycform(img3, srgb2lab); % convert to L*a*b*
+
+% the values of luminosity can span a range from 0 to 100; scale them
+% to [0 1] range (appropriate for MATLAB(R) intensity images of class double)
+% before applying the three contrast enhancement techniques
+max_luminosity = 100;
+L = img3_lab(:,:,1)/max_luminosity;
+
+% replace the luminosity layer with the processed data and then convert
+% the image back to the RGB colorspace
+img3_imadjust = img3_lab;
+img3_imadjust(:,:,1) = imadjust(L)*max_luminosity;
+img3_imadjust = applycform(img3_imadjust, lab2srgb);
+
+img3_histeq = img3_lab;
+img3_histeq(:,:,1) = histeq(L)*max_luminosity;
+img3_histeq = applycform(img3_histeq, lab2srgb);
+
+img3_adapthisteq = img3_lab;
+img3_adapthisteq(:,:,1) = adapthisteq(L)*max_luminosity;
+img3_adapthisteq = applycform(img3_adapthisteq, lab2srgb);
+
+figure, imshow(img3);
+title('Original');
+
+figure, imshow(img3_imadjust);
+title('Imadjust');
+figure, imshow(img3_histeq);
+title('Histeq');
+
+figure, imshow(img3_adapthisteq);
+title('Adapthisteq');

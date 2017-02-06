@@ -1,0 +1,108 @@
+%Apply to region of interest (For Keyboard)
+
+I = imread('001.jpg');
+figure
+h_img = imshow(I);
+e = imellipse(gca,[185 150 50 50]);
+mask = createMask(e,h_img);
+h = fspecial('unsharp');
+I3=rgb2gray(I);
+I2 = roifilt2(h,I3,mask);
+figure;
+imshow(I2);
+I4=imcrop(I2,[185 150 50 50]);
+imshow(I4);
+
+............................
+
+boxImage = imread('a2.jpg');
+figure;
+imshow(boxImage);
+title('Image of an Object');
+sceneImage = imread('001.jpg');
+figure;
+imshow(sceneImage);
+title('Image of a Scene');
+boxPoints = detectFASTFeatures(rgb2gray(boxImage));
+scenePoints = detectFASTFeatures(rgb2gray(sceneImage));
+figure;
+imshow(boxImage);
+title('100 Strongest Feature Points from Box Image');
+hold on;
+plot(selectStrongest(boxPoints, 100));
+figure;
+imshow(sceneImage);
+title('300 Strongest Feature Points from Scene Image');
+hold on;
+plot(selectStrongest(scenePoints, 300));
+[boxFeatures, boxPoints] = extractFeatures(rgb2gray(boxImage), boxPoints);
+[sceneFeatures, scenePoints] = extractFeatures(rgb2gray(sceneImage), scenePoints);
+boxPairs = matchFeatures(boxFeatures, sceneFeatures);
+matchedBoxPoints = boxPoints(boxPairs(:, 1), :);
+matchedScenePoints = scenePoints(boxPairs(:, 2), :);
+figure;
+showMatchedFeatures(boxImage, sceneImage, matchedBoxPoints, matchedScenePoints, 'montage');
+title('Putatively Matched Points (Including Outliers)');
+[tform, inlierBoxPoints, inlierScenePoints] = estimateGeometricTransform(matchedBoxPoints, matchedScenePoints, 'similarity');
+figure;
+showMatchedFeatures(boxImage, sceneImage, inlierBoxPoints, inlierScenePoints, 'montage');
+title('Matched Points (Inliers Only)');
+boxPolygon = [1, 1;...                           % top-left
+        size(boxImage, 2), 1;...                 % top-right
+        size(boxImage, 2), size(boxImage, 1);... % bottom-right
+        1, size(boxImage, 1);...                 % bottom-left
+        1, 1];                   % top-left again to close the polygon
+
+newBoxPolygon = transformPointsForward(tform, boxPolygon);
+figure;
+imshow(sceneImage);
+hold on;
+line(newBoxPolygon(:, 1), newBoxPolygon(:, 2), 'Color', 'y');
+title('Detected Object');
+
+...........................................
+
+%Apply to region of interest (For Mouse)
+
+I = imread('001.jpg');
+figure
+h_img = imshow(I);
+e = imellipse(gca,[205 155 20 20]);
+mask = createMask(e,h_img);
+h = fspecial('unsharp');
+I3=rgb2gray(I);
+I2 = roifilt2(h,I3,mask);
+figure
+imshow(I2)
+
+............................
+
+%Blurred image 
+
+I = im2double(imread('001.jpg'));
+imshow(I);
+title('Original Image (courtesy of MIT)');
+ LEN = 21;
+THETA = 11;
+PSF = fspecial('motion', LEN, THETA);
+blurred = imfilter(I, PSF, 'conv', 'circular');
+imshow(blurred);
+title('Blurred Image');
+ wnr1 = deconvwnr(blurred, PSF, 0);
+imshow(wnr1);
+title('Restored Image');
+
+
+...........................................................
+
+%Morphological
+
+background = imopen(I,strel('disk',15));
+
+% Display the Background Approximation as a Surface
+figure
+surf(double(background(1:8:end,1:8:end))),zlim([0 255]);
+ax = gca;
+ax.YDir = 'reverse';
+I2 = I - background;
+imshow(I2)
